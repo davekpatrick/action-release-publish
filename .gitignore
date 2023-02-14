@@ -97,6 +97,7 @@ localBuild.cfg
 *.mov
 *.wmv
 # Log and temporary files
+logs/*
 *.log
 *.tmp
 #EOF
