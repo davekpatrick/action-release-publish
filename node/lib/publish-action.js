@@ -98,9 +98,7 @@ module.exports = async function publishAction(
     parents: [getCommitData.data.sha],
     tree: createTreeData.data.sha,
   })
-  actionsCore.info(
-    'createCommitData[' + JSON.stringify(createCommitData) + ']'
-  )
+  actionsCore.info('createCommitData[' + JSON.stringify(createCommitData) + ']')
   actionsCore.info('commit[' + createCommitData.data.sha + ']')
 
   // update ref
