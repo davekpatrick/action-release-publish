@@ -1,0 +1,29 @@
+# BOF 
+name: 'GitHub Action Release Publish'
+author: davekpatrick
+description: 'A GitHub Action to publish a release'
+## ------------------------------
+inputs:
+  apiToken:
+   description: 'GitHub API token'
+   required: false
+  versionTag:
+    description: 'The semver version to use for publishing'
+    required: true
+  publishType:
+    description: 'Type of release publishing to execute. Options: action, node'
+    required: true
+    default: 'action'
+## ------------------------------
+outputs:
+  versionTag: # id of output
+    description: 'The release version tag used'
+## ------------------------------
+branding:
+    icon: 'check-circle'
+    color: 'green'
+## ------------------------------
+runs:
+  using: 'node16'
+  main: 'node/dist/index.js'
+# EOF

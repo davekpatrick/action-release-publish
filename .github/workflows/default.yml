@@ -1,0 +1,99 @@
+name: Default
+on:
+  workflow_dispatch:
+    inputs:
+      commitChanges:
+        description: 'True to commit changes'
+        required: true 
+        type: boolean 
+        default: false
+  push:
+  pull_request:
+jobs:
+  # --------------------------------------------
+  build:
+    name: Artifact build
+    strategy:
+      matrix:
+        operatingSystem: [ubuntu-22.04, macos-12, windows-2022]
+        nodeVersion: [12,16]
+      fail-fast: false
+    runs-on: ${{ matrix.operatingSystem }}
+    # 
+    steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.nodeVersion }}
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        cd node
+        npm install
+    - name: Format
+      run: |
+        cd node
+        npm run format
+    - name: Validate
+      run: |
+        cd node
+        npm run validate
+    - name: Compile
+      run: |
+        cd node
+        npm run build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ${{ github.event.repository.name }}-build-node
+        if-no-files-found: error 
+        path: |
+          node/dist/
+          node/package-lock.json
+          README.md
+          action.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ${{ github.event.repository.name }}-build-tests
+        if-no-files-found: error 
+        path: |
+          tests/
+  # --------------------------------------------
+  test:
+    name: Artifact Test
+    strategy:
+      matrix:
+        operatingSystem: [ubuntu-22.04, windows-2022]
+        nodeVersion: [12,16]
+      fail-fast: false
+    runs-on: ${{ matrix.operatingSystem }}
+    needs: [build]
+    #
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.nodeVersion }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-build-node
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-build-tests
+          path: |
+            tests/
+      - name: Validate setup
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          node --version
+          ls -lR
+          set
+      - name: Validate setup
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          & node --version
+          Set-Location -Path ./
+          Get-ChildItem -Recurse
+      - name: Validate build
+        uses: ./
+        with:
+          apiToken: ${{ secrets.GITHUB_TOKEN }}
+          versionTag: "0.1.0+${{ github.run_number }}-${{ github.run_attempt }}"

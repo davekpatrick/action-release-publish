@@ -1,0 +1,7 @@
+# BOF
+
+dist/*
+# Dependency directories
+**/node_modules
+
+# EOF

@@ -1,0 +1,15 @@
+{
+  "name": "Github Action Node.js",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  // https://containers.dev/features
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {
+      "enabled": true,
+      "installOhMyZsh": false
+    },
+    "node": {
+      "version": "16",
+      "nodeGypDependencies": true
+    }
+  }
+}
