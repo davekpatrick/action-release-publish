@@ -34,7 +34,7 @@ module.exports = async function publishAction(
     repo: context.repo.repo,
     ref: getRef,
   })
-  actionsCore.info('returnData[' + JSON.stringify(getRefData) + ']')
+  actionsCore.debug('returnData[' + JSON.stringify(getRefData) + ']')
   if (getRefData.status !== 200) {
     actionsCore.setFailed('Unable to retrieve ref[' + getRef + '] data')
   }
@@ -44,7 +44,7 @@ module.exports = async function publishAction(
     repo: context.repo.repo,
     commit_sha: getRefData.data.object.sha,
   })
-  actionsCore.info('returnData[' + JSON.stringify(getCommitData) + ']')
+  actionsCore.debug('returnData[' + JSON.stringify(getCommitData) + ']')
   if (getCommitData.status !== 200) {
     actionsCore.setFailed(
       'Unable to retrieve commit[' + getRefData.data.object.sha + '] data'
@@ -53,7 +53,7 @@ module.exports = async function publishAction(
   // create blob data
   var gitBlobData = []
   for (let i = 0; i < argFileList.length; i++) {
-    actionsCore.info('createBlobFile[' + argFileList[i] + ']')
+    actionsCore.debug('createBlobFile[' + argFileList[i] + ']')
     let pathToFile = argFileList[i]
     let blobData = await getFileContent(pathToFile)
     let createBlobData = await octokit.rest.git.createBlob({
@@ -62,7 +62,7 @@ module.exports = async function publishAction(
       content: blobData,
       encoding: 'utf-8',
     })
-    actionsCore.info('createBlobSha[' + createBlobData.data.sha + ']')
+    actionsCore.debug('createBlobSha[' + createBlobData.data.sha + ']')
     // add blob data to array
     gitBlobData.push({
       filePath: argFileList[i],
@@ -70,7 +70,7 @@ module.exports = async function publishAction(
       blobSha: createBlobData.data.sha,
     })
   }
-  actionsCore.info('gitBlobData[' + JSON.stringify(gitBlobData) + ']')
+  actionsCore.debug('gitBlobData[' + JSON.stringify(gitBlobData) + ']')
   // build the tree array
   let treeArray = []
   for (let i = 0; i < gitBlobData.length; i++) {
@@ -81,14 +81,14 @@ module.exports = async function publishAction(
       sha: gitBlobData[i].blobSha,
     })
   }
-  actionsCore.info('treeArray[' + JSON.stringify(treeArray) + ']')
+  actionsCore.debug('treeArray[' + JSON.stringify(treeArray) + ']')
   // create tree
   let createTreeData = await octokit.rest.git.createTree({
     owner: context.repo.owner,
     repo: context.repo.repo,
     tree: treeArray,
   })
-  actionsCore.info('createTreeData[' + JSON.stringify(createTreeData) + ']')
+  actionsCore.debug('createTreeData[' + JSON.stringify(createTreeData) + ']')
   // create commit
   var createCommitData = await octokit.rest.git.createCommit({
     owner: context.repo.owner,
@@ -98,7 +98,7 @@ module.exports = async function publishAction(
     parents: [getCommitData.data.sha],
     tree: createTreeData.data.sha,
   })
-  actionsCore.info('createCommitData[' + JSON.stringify(createCommitData) + ']')
+  actionsCore.debug('createCommitData[' + JSON.stringify(createCommitData) + ']')
   actionsCore.info('commit[' + createCommitData.data.sha + ']')
 
   // update ref
@@ -117,8 +117,7 @@ module.exports = async function publishAction(
 
   // create ref
   // doc: https://octokit.github.io/rest.js/v19#git-create-ref
-  // note: the 'ref' parameter must NOT have the 'refs/' prefix even though the documentation says it should
-  let createRef = 'tags/' + argVersionTag
+  let createRef = 'refs/tags/' + argVersionTag
   actionsCore.info('createRef[' + createRef + ']')
   var createRefData = await octokit.rest.git.createRef({
     owner: context.repo.owner,
