@@ -14,7 +14,7 @@ const semver = require('semver') // Node's semver package
 // ------------------------------------
 // Internal modules
 // ------------------------------------
-const publishAction = require('./publish-action.js') // Publish GitHub action
+const publishAction = require('./lib/publish-action.js') // Publish GitHub action
 // ------------------------------------
 // Main
 // ------------------------------------
