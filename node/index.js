@@ -65,8 +65,8 @@ const publishAction = require('./lib/publish-action.js') // Publish GitHub actio
       let actionDetails = packageName + '@' + packageVersion
       let publishActionData = await publishAction(
         apiToken,
-        argVersionTag,
         actionDetails,
+        argVersionTag,
         [
           'README.md',
           'action.yml',

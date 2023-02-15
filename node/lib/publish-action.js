@@ -104,25 +104,39 @@ module.exports = async function publishAction(
   // update ref
   // doc: https://octokit.github.io/rest.js/v19#git-update-ref
   // note: the 'ref' parameter must NOT have the 'refs/' prefix even though the documentation says it should
-  let updateRef = 'tags/' + argVersionTag
-  actionsCore.info('updateRef[' + updateRef + ']')
-  var updateRefData = await octokit.rest.git.updateRef({
+  //let updateRef = 'tags/' + argVersionTag
+  //actionsCore.info('updateRef[' + updateRef + ']')
+  //var updateRefData = await octokit.rest.git.updateRef({
+  //  owner: context.repo.owner,
+  //  repo: context.repo.repo,
+  //  ref: updateRef,
+  //  sha: createCommitData.data.sha,
+  //  force: true,
+  //})
+  //actionsCore.info('updateRefData[' + JSON.stringify(updateRefData) + ']')
+
+  // create ref
+  // doc: https://octokit.github.io/rest.js/v19#git-create-ref
+  // note: the 'ref' parameter must NOT have the 'refs/' prefix even though the documentation says it should
+  let createRef = 'tags/' + argVersionTag
+  actionsCore.info('createRef[' + createRef + ']')
+  var createRefData = await octokit.rest.git.createRef({
     owner: context.repo.owner,
     repo: context.repo.repo,
-    ref: updateRef,
+    ref: createRef,
     sha: createCommitData.data.sha,
-    force: true,
   })
-  actionsCore.info('updateRefData[' + JSON.stringify(updateRefData) + ']')
+  actionsCore.info('createRefData[' + JSON.stringify(createRefData) + ']')
+
   // setup return data
   var returnData = {
     treeSha: createTreeData.data.sha,
     treeUrl: createTreeData.data.url,
     commitSha: createCommitData.data.sha,
     commitUrl: createCommitData.data.url,
-    ref: updateRefData.data.ref,
-    refSha: updateRefData.data.object.sha,
-    refUrl: updateRefData.data.object.url,
+    ref: createRefData.data.ref,
+    refSha: createRefData.data.object.sha,
+    refUrl: createRefData.data.object.url,
   }
   // ------------------------------------
   actionsCore.debug('End ' + functionName)
