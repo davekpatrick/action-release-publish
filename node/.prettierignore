@@ -4,7 +4,8 @@
 **/.git
 
 # Dependency directories
-**/node_modules
+dist/**/*
+node_modules/**/*
 
 # Log and temporary files
 logs/*

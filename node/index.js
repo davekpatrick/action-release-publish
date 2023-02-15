@@ -67,7 +67,13 @@ const publishAction = require('./publish-action.js') // Publish GitHub action
         apiToken,
         argVersionTag,
         actionDetails,
-        [ 'README.md', 'action.yml', 'node/package-lock.json', 'node/dist/index.js', 'node/dist/licenses.txt' ]
+        [
+          'README.md',
+          'action.yml',
+          'node/package-lock.json',
+          'node/dist/index.js',
+          'node/dist/licenses.txt',
+        ]
       )
       if (publishActionData === undefined) {
         return
